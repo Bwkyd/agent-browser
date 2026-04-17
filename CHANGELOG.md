@@ -1,5 +1,11 @@
 # agent-browser
 
+## Unreleased
+
+### Added
+
+- **`[lib]` target** - The `cli/` crate now exposes a library target in addition to the binary, so external Rust crates can reuse the CDP / browser / Chrome-for-Testing primitives without shelling out. The `install` and `native` modules are re-exported; CLI-only modules (`chat`, `commands`, `connection`, etc.) remain binary-private. API is `0.x` and may evolve — pin by `rev` for reproducibility. See `cli/README.md` → "As a library" and `cli/examples/launch_and_fetch.rs` for usage.
+
 ## 0.26.0
 
 <!-- release:start -->

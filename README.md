@@ -73,6 +73,35 @@ Detects your installation method (npm, Homebrew, or Cargo) and runs the appropri
 - **Chrome** - Run `agent-browser install` to download Chrome from [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) (Google's official automation channel). Existing Chrome, Brave, Playwright, and Puppeteer installations are detected automatically. No Playwright or Node.js required for the daemon.
 - **Rust** - Only needed when building from source (see From Source above).
 
+## As a library
+
+The `cli/` crate also exposes a **library target** for external Rust crates that need Chrome-for-Testing + raw CDP automation without shelling out to the binary.
+
+```toml
+# Cargo.toml
+[dependencies]
+agent_browser = { git = "https://github.com/vercel-labs/agent-browser", rev = "<pin a commit>" }
+```
+
+```rust
+// src/main.rs
+use agent_browser::native::cdp::chrome::{launch_chrome, LaunchOptions};
+
+fn main() -> Result<(), String> {
+    let mut chrome = launch_chrome(&LaunchOptions {
+        headless: true,
+        ..Default::default()
+    })?;
+    println!("launched pid={} ws_url={}", chrome.id(), chrome.ws_url);
+    chrome.kill();
+    Ok(())
+}
+```
+
+**Scope.** The library re-exports `install` (Chrome for Testing bootstrap) and `native` (CDP client, browser launch, cookie handling). CLI-only modules (`chat`, `commands`, `connection`, `doctor`, `flags`, `output`, `skills`, `upgrade`, `validation`) are kept binary-private.
+
+**Stability.** The library is `0.x`: the API may evolve between minor releases. Pin by `rev` for build reproducibility. A runnable example lives at [`cli/examples/launch_and_fetch.rs`](cli/examples/launch_and_fetch.rs).
+
 ## Quick Start
 
 ```bash
